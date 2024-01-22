@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>mimi copy player with A-B repeat</title>
+  <link rel="stylesheet" type="text/css" href="main.css" media="all">
+</head>
+
+<body>
+
+  <div>
+    <!-- ビデオ -->
+    <video id="media" width="800" controls class="noFocus">
+      <source src="sample.mp4">
+    </video>
+  </div>
+  <!-- コントローラー部 -->
+  <p id="controller" class="noFocus">
+    <input id="fileInput" class="noFocus" type="file" onchange="setFilePath()" value="sample_sound.mp3" />
+    <button id="playOrPauseButton" class="noFocus">再生</button>
+    <button id="stopButton" class="noFocus">先頭に</button>
+    <button id="backButton" class="noFocus">ちょい戻し</button>
+    <button id="forwardButton" class="noFocus">ちょい送り</button>
+    <button id="quickButton" class="noFocus">高速再生</button>
+    <button id="slowButton" class="noFocus">低速再生</button>
+    <button id="normalButton" class="noFocus">通常再生</button>
+    <br>
+    再生レート：<span id="rate"></span>
+  </p>
+
+  <h6>ショートカット：再生／停止="Return or Space"、ちょい戻し="Shift+Space"、ちょい送り="Shift+Option+Space"、A,B＝A-Bリピート設定、N=リピート解除<br>
+  </h6>
+  <br>
+
+  <script type="text/javascript" src="main.js" charset="UTF-8"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+#genko {
+    font-size: 200%;
+    width: 800px;
+    height: 400px;
+    background-color:#6666;
+}
+
+#debug{
+    background-color:#AAAA;
+}
+
+#man_txt {
+    width: 800px;
+}
+
+p {
+    margin-left: 20px;
+}
+
+body {
+    background-color:#5555;
+}
