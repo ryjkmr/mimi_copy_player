@@ -16,8 +16,9 @@
     </video>
   </div>
   <!-- コントローラー部 -->
-  <p id="controller" class="noFocus">
+  <p id="controller" class="noFocus" tabindex="-1">
     <input id="fileInput" class="noFocus" type="file" onchange="setFilePath()" value="sample_sound.mp3" />
+    <br>
     <button id="playOrPauseButton" class="noFocus">再生</button>
     <button id="stopButton" class="noFocus">先頭に</button>
     <button id="backButton" class="noFocus">ちょい戻し</button>
@@ -26,7 +27,17 @@
     <button id="slowButton" class="noFocus">低速再生</button>
     <button id="normalButton" class="noFocus">通常再生</button>
     <br>
+    <button id="setAButton" class="noFocus">Aを設定</button>
+    <button id="setBButton" class="noFocus">Bを設定</button>
+    <button id="toggleLoopButton" class="noFocus">リピート開始</button>
+    <button id="clearLoopButton" class="noFocus">時間を削除</button>
+    <br>
     再生レート：<span id="rate"></span>
+    <br>
+    A-Bリピート：<span id="loopStatus">未設定</span>
+    <br>
+    A: <span id="repeatTimeA">--:--</span>
+    B: <span id="repeatTimeB">--:--</span>
   </p>
 
   <h6>ショートカット：再生／停止="Return or Space"、ちょい戻し="Shift+Space"、ちょい送り="Shift+Option+Space"、A,B＝A-Bリピート設定、N=リピート解除<br>
