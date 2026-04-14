@@ -254,23 +254,28 @@ window.onload = function () {
     //---------------------------------------ショートカットキーの処理-----------------------
 
     window.document.onkeydown = function (evt) {
-        if (evt.target.tagName.toLowerCase() === 'input') {
-            return; // input要素での入力中は何もしない
-        }
-
         const keyCode = evt.code;
+        const target = evt.target;
+        const tagName = target.tagName.toLowerCase();
+        const isTextEditing = tagName === "input" || tagName === "textarea" || target.isContentEditable;
+
+        if (isTextEditing && evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Enter") {
+            playOrPauseButton.click();
+            evt.preventDefault();
+            return;
+        }
 
         if (evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Space") { //Shift+Spaceで少し戻る
             backButton.click();
             evt.preventDefault();//テキストに改行やスペースが入らないようにイベントを無効化する
         }
 
-        if (!evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Enter") { //Returnで再生・停止
+        if (!isTextEditing && !evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Enter") { //Returnで再生・停止
             playOrPauseButton.click();
             evt.preventDefault();//テキストに改行やスペースが入らないようにイベントを無効化する
         }
 
-        if (!evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Space") { //Spaceで再生・停止
+        if (!isTextEditing && !evt.shiftKey && !evt.altKey && !evt.ctrlKey && keyCode == "Space") { //Spaceで再生・停止
             playOrPauseButton.click();
             evt.preventDefault();//テキストに改行やスペースが入らないようにイベントを無効化する
         }
@@ -279,6 +284,10 @@ window.onload = function () {
         if (evt.shiftKey && evt.altKey && !evt.ctrlKey && keyCode == "Space") { //Shift+option(alt)+Spaceで少し進める
             forwardButton.click();
             evt.preventDefault();//テキストに改行やスペースが入らないようにイベントを無効化する
+        }
+
+        if (isTextEditing) {
+            return; // テキスト編集中はA-B関連ショートカットのみ無効化
         }
 
         console.log(evt.key);

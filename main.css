@@ -17,6 +17,18 @@ p {
     margin-left: 20px;
 }
 
+#memoContainer {
+    margin-left: 20px;
+}
+
+#memoArea {
+    width: 800px;
+    max-width: calc(100vw - 48px);
+    min-height: 220px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
 body {
     background-color:#5555;
 }
