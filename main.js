@@ -31,6 +31,7 @@ window.onload = function () {
     const loopStatus = document.getElementById("loopStatus");
     const repeatTimeAElement = document.getElementById("repeatTimeA");
     const repeatTimeBElement = document.getElementById("repeatTimeB");
+    const rateElement = document.getElementById("rate");
 
     //スキップ時間（秒）の設定
     const SKIP_TIME = 4;
@@ -43,6 +44,9 @@ window.onload = function () {
     let repeatTime_B = Infinity;
     let enable_loop = false;
     let hasLoopRange = false;
+    let desiredPlaybackRate = 1;
+    let isInternalLoopSeek = false;
+    let resumeAfterLoopSeek = false;
     console.log(repeatTime_A, repeatTime_B, enable_loop);
 
     function formatTime(seconds) {
@@ -71,6 +75,33 @@ window.onload = function () {
         repeatTimeBElement.textContent = hasLoopRange && Number.isFinite(repeatTime_B) ? formatTime(repeatTime_B) : "--:--";
     }
 
+    function updateRateDisplay() {
+        rateElement.textContent = video.playbackRate.toFixed(2);
+    }
+
+    function setPlaybackRate(nextRate) {
+        desiredPlaybackRate = nextRate;
+        video.defaultPlaybackRate = nextRate;
+        video.playbackRate = nextRate;
+        updateRateDisplay();
+    }
+
+    function ensurePlaybackRate() {
+        if (video.defaultPlaybackRate !== desiredPlaybackRate) {
+            video.defaultPlaybackRate = desiredPlaybackRate;
+        }
+        if (video.playbackRate !== desiredPlaybackRate) {
+            video.playbackRate = desiredPlaybackRate;
+        }
+        updateRateDisplay();
+    }
+
+    function jumpToLoopStart() {
+        resumeAfterLoopSeek = !video.paused;
+        isInternalLoopSeek = true;
+        video.currentTime = repeatTime_A;
+    }
+
     function pauseLoop() {
         enable_loop = false;
         updateLoopDisplay();
@@ -82,8 +113,8 @@ window.onload = function () {
             updateLoopDisplay();
             return;
         }
-        video.currentTime = repeatTime_A;
         enable_loop = true;
+        jumpToLoopStart();
         updateLoopDisplay();
         console.log("repeat", repeatTime_A, repeatTime_B);
     }
@@ -125,22 +156,39 @@ window.onload = function () {
     }
 
     updateLoopDisplay();
+    updateRateDisplay();
 
     video.addEventListener("loadedmetadata", function () {
         repeatTime_A = 0;
         repeatTime_B = video.duration;
         enable_loop = false;
         hasLoopRange = false;
+        ensurePlaybackRate();
         updateLoopDisplay();
     }, false);
 
+    video.addEventListener("ratechange", function () {
+        updateRateDisplay();
+    }, false);
+
     video.addEventListener("seeked", function () {
+        if (isInternalLoopSeek) {
+            isInternalLoopSeek = false;
+            if (resumeAfterLoopSeek) {
+                video.play();
+            }
+            resumeAfterLoopSeek = false;
+        }
+        ensurePlaybackRate();
         controller.focus({ preventScroll: true });
     }, false);
 
 
 
     video.addEventListener("seeking", (e) => {
+        if (isInternalLoopSeek) {
+            return;
+        }
         const now = video.currentTime;
         if (now > repeatTime_B || now < repeatTime_A) {
             pauseLoop();
@@ -153,12 +201,15 @@ window.onload = function () {
     });
 
     video.addEventListener("timeupdate", (e) => {
+        if (video.playbackRate !== desiredPlaybackRate || video.defaultPlaybackRate !== desiredPlaybackRate) {
+            ensurePlaybackRate();
+        }
         const now = video.currentTime;
         if (enable_loop) {
             if (now > repeatTime_B) {
-                video.currentTime = repeatTime_A;
+                jumpToLoopStart();
             } else if (now < repeatTime_A) {
-                video.currentTime = repeatTime_A;
+                jumpToLoopStart();
             }
         }
     });
@@ -170,7 +221,7 @@ window.onload = function () {
     video.addEventListener("play", function () {
         if (video.src) {
             playOrPauseButton.textContent = "停止";
-            document.getElementById("rate").innerHTML = video.playbackRate.toFixed(2);
+            ensurePlaybackRate();
         }
         // this.blur();
     }, false);
@@ -208,20 +259,17 @@ window.onload = function () {
 
     // 高速再生ボタンをクリックされたら、再生速度を上げる
     quickButton.addEventListener("click", function () {
-        video.playbackRate = Math.min(video.playbackRate + 0.1, 4);
-        document.getElementById("rate").innerHTML = video.playbackRate.toFixed(2);
+        setPlaybackRate(Math.min(desiredPlaybackRate + 0.1, 4));
     }, false);
 
     // 低速再生ボタンをクリックされたら、再生速度を下げる
     slowButton.addEventListener("click", function () {
-        video.playbackRate = Math.max(video.playbackRate - 0.1, 0.1);
-        document.getElementById("rate").innerHTML = video.playbackRate.toFixed(2);
+        setPlaybackRate(Math.max(desiredPlaybackRate - 0.1, 0.1));
     }, false);
 
     // 通常再生ボタンをクリックされたら、再生速度をリセット
     normalButton.addEventListener("click", function () {
-        video.playbackRate = 1;
-        document.getElementById("rate").innerHTML = video.playbackRate.toFixed(2);
+        setPlaybackRate(1);
     }, false);
 
     setAButton.addEventListener("click", function () {
