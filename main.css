@@ -17,6 +17,26 @@ p {
     margin-left: 20px;
 }
 
+.dropZone {
+    position: relative;
+    width: fit-content;
+    margin: 20px;
+    border: 2px dashed transparent;
+    border-radius: 12px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.dropZone.isDragOver {
+    border-color: #2f6fed;
+    background-color: rgba(47, 111, 237, 0.12);
+}
+
+.dropMessage {
+    margin: 8px 0 0;
+    color: #234;
+    font-size: 14px;
+}
+
 #memoContainer {
     margin-left: 20px;
 }

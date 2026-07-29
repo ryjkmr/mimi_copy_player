@@ -9,15 +9,16 @@
 
 <body>
 
-  <div>
+  <div id="dropZone" class="dropZone">
     <!-- ビデオ -->
     <video id="media" width="800" controls class="noFocus">
       <source src="sample.mp4">
     </video>
+    <p id="dropMessage" class="dropMessage">ここに動画ファイルをドラッグ&ドロップできます</p>
   </div>
   <!-- コントローラー部 -->
   <p id="controller" class="noFocus" tabindex="-1">
-    <input id="fileInput" class="noFocus" type="file" onchange="setFilePath()" value="sample_sound.mp3" />
+    <input id="fileInput" class="noFocus" type="file" accept="video/*" />
     <br>
     <button id="playOrPauseButton" class="noFocus">再生</button>
     <button id="stopButton" class="noFocus">先頭に</button>

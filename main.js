@@ -27,11 +27,13 @@ window.onload = function () {
     const clearLoopButton = document.getElementById("clearLoopButton");
     // ショートカット用のフォーカス受け皿
     const controller = document.getElementById("controller");
+    const dropZone = document.getElementById("dropZone");
     // A-B状態表示
     const loopStatus = document.getElementById("loopStatus");
     const repeatTimeAElement = document.getElementById("repeatTimeA");
     const repeatTimeBElement = document.getElementById("repeatTimeB");
     const rateElement = document.getElementById("rate");
+    const fileInput = document.getElementById("fileInput");
 
     //スキップ時間（秒）の設定
     const SKIP_TIME = 4;
@@ -94,6 +96,18 @@ window.onload = function () {
             video.playbackRate = desiredPlaybackRate;
         }
         updateRateDisplay();
+    }
+
+    function loadVideoFile(file) {
+        if (!file || !file.type.startsWith("video/")) {
+            return false;
+        }
+        video.src = URL.createObjectURL(file);
+        return true;
+    }
+
+    function setDropZoneActive(isActive) {
+        dropZone.classList.toggle("isDragOver", isActive);
     }
 
     function jumpToLoopStart() {
@@ -213,6 +227,36 @@ window.onload = function () {
             }
         }
     });
+
+    fileInput.addEventListener("change", function () {
+        loadVideoFile(fileInput.files[0]);
+    }, false);
+
+    ["dragenter", "dragover"].forEach(function (eventName) {
+        dropZone.addEventListener(eventName, function (event) {
+            event.preventDefault();
+            setDropZoneActive(true);
+        }, false);
+    });
+
+    ["dragleave", "dragend"].forEach(function (eventName) {
+        dropZone.addEventListener(eventName, function (event) {
+            if (event.relatedTarget && dropZone.contains(event.relatedTarget)) {
+                return;
+            }
+            setDropZoneActive(false);
+        }, false);
+    });
+
+    dropZone.addEventListener("drop", function (event) {
+        event.preventDefault();
+        setDropZoneActive(false);
+        const droppedFile = event.dataTransfer && event.dataTransfer.files ? event.dataTransfer.files[0] : null;
+        if (!loadVideoFile(droppedFile)) {
+            return;
+        }
+        controller.focus({ preventScroll: true });
+    }, false);
 
 
 
@@ -360,15 +404,3 @@ window.onload = function () {
 
 
 }  // onload処理の終わり
-
-
-//新しいビデオのパスを取得してセット
-function setFilePath() {
-    var fileInput = document.getElementById("fileInput");
-    var file = fileInput.files[0];
-    if (!file) {
-        return;
-    }
-    var video = document.getElementById("media");
-    video.src = URL.createObjectURL(file);
-}
