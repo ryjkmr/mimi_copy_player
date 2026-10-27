@@ -99,7 +99,7 @@ window.onload = function () {
     }
 
     function loadVideoFile(file) {
-        if (!file || !file.type.startsWith("video/")) {
+        if (!file || !(file.type.startsWith("video/") || file.type === "audio/mpeg")) {
             return false;
         }
         video.src = URL.createObjectURL(file);
